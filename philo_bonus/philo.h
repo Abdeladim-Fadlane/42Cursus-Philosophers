@@ -6,7 +6,7 @@
 /*   By: afadlane <afadlane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/05 15:03:33 by afadlane          #+#    #+#             */
-/*   Updated: 2023/03/31 15:09:08 by afadlane         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:24:32 by afadlane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include <limits.h>
 # include <pthread.h>
+# include <semaphore.h>
+# include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
@@ -28,7 +30,6 @@ typedef struct s_info
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				time_must_eat;
-	pthread_mutex_t	lock;
 
 }					t_info;
 
@@ -38,12 +39,14 @@ typedef struct s_philo
 	int				eaten;
 	struct s_philo	*left;
 	struct s_philo	*right;
-	pthread_mutex_t	forks;
 	struct s_info	*infop;
 	long			begin_time;
 	long			time_eat;
-	int				i;
-	int				eat;
+	sem_t			*semaphore;
+	sem_t			*lock;
+	sem_t			*lock_time;
+	pid_t			pid;
+	struct timeval	time;
 }					t_philo;
 
 long				ft_atoi(char *str);
@@ -52,6 +55,8 @@ void				*thread_func(void *tmp);
 void				get_and_insia(t_info *p, char **av, int ac);
 void				eat(t_philo *p);
 long				get_current_time(t_philo *p);
-void				sleep_time(int time, t_philo *p);
+void				sleep_time(long time);
 int					check_argv(char **av, int ac);
+long				gettime(void);
+void				*check_dead(void *tmp);
 #endif
